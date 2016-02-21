@@ -1,25 +1,118 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Activity Data Analysis"
+author: "Peter Zeglen"
+date: "February 21, 2016"
+output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 ## Loading and preprocessing the data
 
+We will go ahead and read the data into R and use the head() function to get an idea of how it looks.
+
+```{r cars}
+table <- read.csv("activity.csv")
+head(table)
+```
+
+## What is the mean total number of steps taken per day?
+
+To answer the first question, we are going to condense the database to steps per day.First, we split it into a list by date and sum the step count for each date. It stores this information in "Per Day".
+
+```{r pressure, echo=TRUE}
+splitted <- split(table,f=table$date)
+mean2 <- function(x){mean(x$steps,na.rm = TRUE)}
+PerDay <- lapply(splitted,FUN = mean2)
+```
+
+We then use PerDay to make a histogram and find the mean and median.
+
+```{r where,echo = TRUE}
+hist(unlist(PerDay),xlab = "Daily Step Count",main = "Steps per day")
+mean(unlist(PerDay),na.rm = TRUE)
+median(unlist(PerDay),na.rm = TRUE)
+```
+
+## What is the average daily pattern?
+
+To find the daily patterns, we perform a similar function, except this time we split by time of day.
+
+```{r why, echo = TRUE}
+splitBySlot <- split(table,f=table$interval)
+mean2 <- function(x){mean(x$steps,na.rm = TRUE)}
+PerTime <- lapply(splitBySlot,FUN = mean2)
+plot(names(PerTime),unlist(PerTime),ylab = "Number of Steps",xlab = "Time of Day",main = "Steps throughout the Day")
+```
+
+To find the maximum, we combine the interval time and the steps into a matrix "mat". We then take the max of the steps and check the corresponding interval.
+
+```{r who, echo = TRUE}
+mat <- cbind(names(PerTime),unlist(PerTime))
+mat[which.max(mat[,2]),1]
+```
+
+##Imputing Missing Values
+
+Now, we are going to replace the missing data. First, let us see how many values we have to replace.
+```{r what,echo=TRUE}
+length(is.na(table['steps']))
+```
+We are going to replace the missing values with the mean for that time interval.
+```{r how,echo=TRUE}
+interNA <- unlist(table$interval)
+stepsNA <- unlist(table$steps)
+timeNA <- unlist(PerTime)
+m <- data.frame(cbind(interNA,stepsNA))
+m$correctedSteps <- m$stepsNA
+m$correctedSteps[is.na(m$correctedSteps)] <- 0
+m$predicted <- PerTime[as.character(interNA)]
+m$filled <- m$correctedSteps+as.numeric(m$correctedSteps==0)*as.numeric(m$predicted)
+table <- read.csv("activity.csv")
+newTable <- table
+newTable$steps <- m$filled
+head(newTable)
+```
+That "filled" column in m tells us the "inferred" data. We combine all this into the "new table". Next we make our histogram.
+
+```{r bomb,echo=TRUE}
+splitted <- split(newTable,f=newTable$date)
+mean2 <- function(x){mean(x$steps,na.rm = TRUE)}
+PerDay <- lapply(splitted,FUN = mean2)
+hist(unlist(PerDay),xlab = "Daily Step Count",main = "Steps per day")
+mean(unlist(PerDay),na.rm = TRUE)
+median(unlist(PerDay),na.rm = TRUE)
+```
+
+These means and medians are fairly different from the original dataset, and the distribution has changed slightly. By adding in our predictions, the total counts increased across the board. This increased the mean and median. This increase appears to be more biased towards days with lower counts, and this caused the change in the histog ram.
+
+##Are there differences in activity patterns between weekdays and weekends?
+
+We first determine which dates are weekends and weekdays. We split newtable into two tables (one for weekends, one for weekdays) and add a factored column to the newtable.
+
+```{r dot,echo = TRUE}
+newTable$week <- weekdays(as.Date(newTable$date))
+x <- newTable$week=="Sunday"
+y <- newTable$week=="Saturday"
+tableWE <- newTable[x|y,]
+tableWD <- newTable[!x&!y,]
+newTable$week <- x|y
+newTable$week <- factor(newTable$week,levels = c(TRUE,FALSE),labels = c("Weekend","Weekday"))
+tableWE$interval <- factor(tableWE$interval)
+tableWD$interval <- factor(tableWD$interval)
+```
+
+newTable now has our factored column.
 
 
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+```{r com, echo=TRUE}
+splitWE <- split(tableWE,f=tableWE$interval)
+PerWEInt <- lapply(splitWE,FUN = mean2)
+splitWD <- split(tableWD,f=tableWD$interval)
+PerWDInt <- lapply(splitWD,FUN = mean2)
+par(mfrow = c(2,1))
+plot(names(PerWDInt),unlist(PerWDInt),xlab = "Interval",ylab = "Steps",main = "Weekdays",type = "l")
+plot(names(PerWEInt),unlist(PerWEInt),xlab = "Interval",ylab = "Steps",main = "Weekends",type = "l")
+```
