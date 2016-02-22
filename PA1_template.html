@@ -94,6 +94,7 @@ PerDay &lt;- lapply(splitted,FUN = mean2)</code></pre>
 <pre><code>## [1] 37.3826</code></pre>
 <pre class="r"><code>median(unlist(PerDay),na.rm = TRUE)</code></pre>
 <pre><code>## [1] 37.37847</code></pre>
+<p>The mean is 37.3826 and the median is 37.37847..</p>
 </div>
 <div id="what-is-the-average-daily-pattern" class="section level2">
 <h2>What is the average daily pattern?</h2>
@@ -114,7 +115,7 @@ mat[which.max(mat[,2]),1]</code></pre>
 <p>Now, we are going to replace the missing data. First, let us see how many values we have to replace.</p>
 <pre class="r"><code>length(is.na(table['steps']))</code></pre>
 <pre><code>## [1] 17568</code></pre>
-<p>We are going to replace the missing values with the mean for that time interval.</p>
+<p>The above returns 17568. We are going to replace the missing values with the mean for that time interval.</p>
 <pre class="r"><code>interNA &lt;- unlist(table$interval)
 stepsNA &lt;- unlist(table$steps)
 timeNA &lt;- unlist(PerTime)
@@ -144,7 +145,7 @@ hist(unlist(PerDay),xlab = &quot;Daily Step Count&quot;,main = &quot;Steps per d
 <pre><code>## [1] 55.12496</code></pre>
 <pre class="r"><code>median(unlist(PerDay),na.rm = TRUE)</code></pre>
 <pre><code>## [1] 54.99214</code></pre>
-<p>These means and medians are fairly different from the original dataset, and the distribution has changed slightly. By adding in our predictions, the total counts increased across the board. This increased the mean and median. This increase appears to be more biased towards days with lower counts, and this caused the change in the histog ram.</p>
+<p>The mean is 55.12496 and the median is 54.99214. These means and medians are fairly different from the original dataset, and the distribution has changed slightly. By adding in our predictions, the total counts increased across the board. This increased the mean and median. This increase appears to be more biased towards days with lower counts, and this caused the change in the histog ram.</p>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>

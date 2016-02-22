@@ -36,6 +36,8 @@ mean(unlist(PerDay),na.rm = TRUE)
 median(unlist(PerDay),na.rm = TRUE)
 ```
 
+The mean is 37.3826 and the median is 37.37847..
+
 ## What is the average daily pattern?
 
 To find the daily patterns, we perform a similar function, except this time we split by time of day.
@@ -60,7 +62,7 @@ Now, we are going to replace the missing data. First, let us see how many values
 ```{r what,echo=TRUE}
 length(is.na(table['steps']))
 ```
-We are going to replace the missing values with the mean for that time interval.
+The above returns 17568. We are going to replace the missing values with the mean for that time interval.
 ```{r how,echo=TRUE}
 interNA <- unlist(table$interval)
 stepsNA <- unlist(table$steps)
@@ -86,7 +88,7 @@ mean(unlist(PerDay),na.rm = TRUE)
 median(unlist(PerDay),na.rm = TRUE)
 ```
 
-These means and medians are fairly different from the original dataset, and the distribution has changed slightly. By adding in our predictions, the total counts increased across the board. This increased the mean and median. This increase appears to be more biased towards days with lower counts, and this caused the change in the histog ram.
+The mean is 55.12496 and the median is 54.99214. These means and medians are fairly different from the original dataset, and the distribution has changed slightly. By adding in our predictions, the total counts increased across the board. This increased the mean and median. This increase appears to be more biased towards days with lower counts, and this caused the change in the histog ram.
 
 ##Are there differences in activity patterns between weekdays and weekends?
 
